@@ -13,10 +13,16 @@ import router from '@adonisjs/core/services/router'
 import transmit from '@adonisjs/transmit/services/main'
 import {
   authThrottle,
+  canterMatchThrottle,
+  canterPublicThrottle,
+  canterTurnThrottle,
   clockUpdateThrottle,
   gameUpdateThrottle,
   globalThrottle,
   inviteThrottle,
+  kanterGuestSessionThrottle,
+  kanterLeaderboardThrottle,
+  kanterMatchThrottle,
   otpRequestThrottle,
   otpVerifyThrottle,
   scoreUpdateThrottle,
@@ -28,6 +34,7 @@ import {
 const PushNotificationsController = () => import('#controllers/push_notifications_controller')
 const SecretSantaController = () => import('#controllers/secret_santa_controller')
 const CoachesController = () => import('#controllers/coaches_controller')
+const KanterBallController = () => import('#controllers/kanter_ball_controller')
 const MeCoachController = () => import('#controllers/me_coach_controller')
 
 transmit.registerRoutes()
@@ -175,6 +182,58 @@ router
         'completeProfileAndAccept',
       ])
       .use(middleware.apiAuth())
+
+    router
+      .group(() => {
+        router.post('canter/matches', [controllers.CanterMatches, 'store'])
+        router.post('canter/matches/:inviteCode/join', [controllers.CanterMatches, 'join'])
+        router.get('canter/matches/:matchId', [controllers.CanterMatches, 'show'])
+        router.post('canter/matches/:matchId/claim-timeout', [
+          controllers.CanterMatches,
+          'claimTimeout',
+        ])
+      })
+      .use(middleware.apiAuth())
+      .use(canterMatchThrottle)
+
+    router
+      .post('canter/matches/:matchId/turns', [controllers.CanterMatches, 'submitTurn'])
+      .use(middleware.apiAuth())
+      .use(canterTurnThrottle)
+
+    // Public spectator endpoints — matches are public, no login required to watch.
+    router
+      .group(() => {
+        router.get('canter/matches', [controllers.CanterMatches, 'index'])
+        router.get('canter/matches/:matchId/spectate', [controllers.CanterMatches, 'spectate'])
+      })
+      .use(canterPublicThrottle)
+
+    /**
+     * Kanter Ball — solo (vs CPU) matches + leaderboard. Shares the
+     * canter_matches table with PvP above (match_type = 'solo'), but has
+     * its own guest-session identity: no login needed to play, no Sportykore
+     * User required until a guest chooses to "save profile".
+     */
+    router
+      .post('kanter-ball/guest-sessions', [KanterBallController, 'guestSession'])
+      .use(kanterGuestSessionThrottle)
+
+    router
+      .group(() => {
+        router.post('kanter-ball/matches/start', [KanterBallController, 'startMatch'])
+        router.post('kanter-ball/matches/:matchId/finish', [KanterBallController, 'finishMatch'])
+      })
+      .use(kanterMatchThrottle)
+
+    router
+      .get('kanter-ball/leaderboard', [KanterBallController, 'leaderboard'])
+      .use(kanterLeaderboardThrottle)
+
+    router
+      .post('kanter-ball/players/claim', [KanterBallController, 'claimProfile'])
+      .use(middleware.apiAuth())
+      .use(authThrottle)
 
     router
       .post('leagues/accept-league-player-request', [

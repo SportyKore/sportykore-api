@@ -74,6 +74,18 @@ export type ScannedRoutes = {
     'me_coach.photo': { paramsTuple?: []; params?: {} }
     'invites.accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'invites.complete_profile_and_accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'canter_matches.store': { paramsTuple?: []; params?: {} }
+    'canter_matches.join': { paramsTuple: [ParamValue]; params: {'inviteCode': ParamValue} }
+    'canter_matches.show': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'canter_matches.claim_timeout': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'canter_matches.submit_turn': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'canter_matches.index': { paramsTuple?: []; params?: {} }
+    'canter_matches.spectate': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'kanter_ball.guest_session': { paramsTuple?: []; params?: {} }
+    'kanter_ball.start_match': { paramsTuple?: []; params?: {} }
+    'kanter_ball.finish_match': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'kanter_ball.leaderboard': { paramsTuple?: []; params?: {} }
+    'kanter_ball.claim_profile': { paramsTuple?: []; params?: {} }
     'players.accept_league_player_request': { paramsTuple?: []; params?: {} }
     'players.league_player_requests': { paramsTuple?: []; params?: {} }
     'favourite_leagues.store': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
@@ -172,6 +184,10 @@ export type ScannedRoutes = {
     'player_highlights.index': { paramsTuple?: []; params?: {} }
     'me_coach.show': { paramsTuple?: []; params?: {} }
     'invites.accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'canter_matches.show': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'canter_matches.index': { paramsTuple?: []; params?: {} }
+    'canter_matches.spectate': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'kanter_ball.leaderboard': { paramsTuple?: []; params?: {} }
     'players.league_player_requests': { paramsTuple?: []; params?: {} }
     'venues.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
     'stages.qualifiers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -213,6 +229,10 @@ export type ScannedRoutes = {
     'player_highlights.index': { paramsTuple?: []; params?: {} }
     'me_coach.show': { paramsTuple?: []; params?: {} }
     'invites.accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'canter_matches.show': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'canter_matches.index': { paramsTuple?: []; params?: {} }
+    'canter_matches.spectate': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'kanter_ball.leaderboard': { paramsTuple?: []; params?: {} }
     'players.league_player_requests': { paramsTuple?: []; params?: {} }
     'venues.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
     'stages.qualifiers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -253,6 +273,14 @@ export type ScannedRoutes = {
     'me_coach.store': { paramsTuple?: []; params?: {} }
     'me_coach.photo': { paramsTuple?: []; params?: {} }
     'invites.complete_profile_and_accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'canter_matches.store': { paramsTuple?: []; params?: {} }
+    'canter_matches.join': { paramsTuple: [ParamValue]; params: {'inviteCode': ParamValue} }
+    'canter_matches.claim_timeout': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'canter_matches.submit_turn': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'kanter_ball.guest_session': { paramsTuple?: []; params?: {} }
+    'kanter_ball.start_match': { paramsTuple?: []; params?: {} }
+    'kanter_ball.finish_match': { paramsTuple: [ParamValue]; params: {'matchId': ParamValue} }
+    'kanter_ball.claim_profile': { paramsTuple?: []; params?: {} }
     'players.accept_league_player_request': { paramsTuple?: []; params?: {} }
     'favourite_leagues.store': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
     'game_score.update': { paramsTuple: [ParamValue]; params: {'gameId': ParamValue} }

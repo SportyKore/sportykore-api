@@ -150,4 +150,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   ALLOW_DEMO_SEED: Env.schema.boolean.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | CORS allowlist for production (comma-separated origins).
+  | Unused in development, where every origin is allowed.
+  |----------------------------------------------------------
+  */
+  ALLOWED_ORIGINS: Env.schema.string.optional(),
 })

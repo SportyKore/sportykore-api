@@ -1,5 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/cors'
+import env from '#start/env'
 
 /**
  * Configuration options to tweak the CORS policy. The following
@@ -7,6 +8,16 @@ import { defineConfig } from '@adonisjs/cors'
  *
  * https://docs.adonisjs.com/guides/security/cors
  */
+
+/**
+ * ALLOWED_ORIGINS is a comma-separated list (e.g. a Cloudflare Pages preview
+ * URL changes per-deploy, so this stays env-driven instead of hardcoded).
+ */
+const allowedOrigins = (env.get('ALLOWED_ORIGINS') ?? '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
 const corsConfig = defineConfig({
   /**
    * Enable or disable CORS handling globally.
@@ -15,10 +26,10 @@ const corsConfig = defineConfig({
 
   /**
    * In development, allow every origin to simplify local front/backend setup.
-   * In production, keep an explicit allowlist (empty by default, so no
-   * cross-origin browser access is allowed until configured).
+   * In production, keep an explicit allowlist driven by ALLOWED_ORIGINS (empty
+   * by default, so no cross-origin browser access is allowed until configured).
    */
-  origin: app.inDev ? true : [],
+  origin: app.inDev ? true : allowedOrigins,
 
   /**
    * HTTP methods accepted for cross-origin requests.

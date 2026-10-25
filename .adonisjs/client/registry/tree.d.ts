@@ -138,6 +138,22 @@ export interface ApiDefinition {
     completeProfileAndAccept: typeof routes['invites.complete_profile_and_accept']
     generate: typeof routes['invites.generate']
   }
+  canterMatches: {
+    store: typeof routes['canter_matches.store']
+    join: typeof routes['canter_matches.join']
+    show: typeof routes['canter_matches.show']
+    claimTimeout: typeof routes['canter_matches.claim_timeout']
+    submitTurn: typeof routes['canter_matches.submit_turn']
+    index: typeof routes['canter_matches.index']
+    spectate: typeof routes['canter_matches.spectate']
+  }
+  kanterBall: {
+    guestSession: typeof routes['kanter_ball.guest_session']
+    startMatch: typeof routes['kanter_ball.start_match']
+    finishMatch: typeof routes['kanter_ball.finish_match']
+    leaderboard: typeof routes['kanter_ball.leaderboard']
+    claimProfile: typeof routes['kanter_ball.claim_profile']
+  }
   favouriteLeagues: {
     store: typeof routes['favourite_leagues.store']
     destroy: typeof routes['favourite_leagues.destroy']

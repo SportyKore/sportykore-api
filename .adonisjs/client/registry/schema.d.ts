@@ -847,6 +847,150 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/invites_controller').default['completeProfileAndAccept']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'canter_matches.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/canter/matches'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/canter_match').createCanterMatchValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/canter_match').createCanterMatchValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'canter_matches.join': {
+    methods: ["POST"]
+    pattern: '/api/v1/canter/matches/:inviteCode/join'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/canter_match').joinCanterMatchValidator)>>
+      paramsTuple: [ParamValue]
+      params: { inviteCode: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/canter_match').joinCanterMatchValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['join']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['join']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'canter_matches.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/canter/matches/:matchId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { matchId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/canter_match').canterMatchParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['show']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'canter_matches.claim_timeout': {
+    methods: ["POST"]
+    pattern: '/api/v1/canter/matches/:matchId/claim-timeout'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/canter_match').canterMatchParamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { matchId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/canter_match').canterMatchParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['claimTimeout']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['claimTimeout']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'canter_matches.submit_turn': {
+    methods: ["POST"]
+    pattern: '/api/v1/canter/matches/:matchId/turns'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/canter_match').canterMatchParamsValidator)>|InferInput<(typeof import('#validators/canter_match').submitCanterTurnValidator)>>
+      paramsTuple: [ParamValue]
+      params: { matchId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/canter_match').canterMatchParamsValidator)>|InferInput<(typeof import('#validators/canter_match').submitCanterTurnValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['submitTurn']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['submitTurn']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'canter_matches.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/canter/matches'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['index']>>>
+    }
+  }
+  'canter_matches.spectate': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/canter/matches/:matchId/spectate'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { matchId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/canter_match').canterMatchParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['spectate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/canter_matches_controller').default['spectate']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'kanter_ball.guest_session': {
+    methods: ["POST"]
+    pattern: '/api/v1/kanter-ball/guest-sessions'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/kanter_ball').guestSessionValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/kanter_ball').guestSessionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['guestSession']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['guestSession']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'kanter_ball.start_match': {
+    methods: ["POST"]
+    pattern: '/api/v1/kanter-ball/matches/start'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/kanter_ball').startKanterMatchValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/kanter_ball').startKanterMatchValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['startMatch']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['startMatch']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'kanter_ball.finish_match': {
+    methods: ["POST"]
+    pattern: '/api/v1/kanter-ball/matches/:matchId/finish'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/kanter_ball').kanterMatchParamsValidator)>|InferInput<(typeof import('#validators/kanter_ball').finishKanterMatchValidator)>>
+      paramsTuple: [ParamValue]
+      params: { matchId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/kanter_ball').kanterMatchParamsValidator)>|InferInput<(typeof import('#validators/kanter_ball').finishKanterMatchValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['finishMatch']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['finishMatch']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'kanter_ball.leaderboard': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/kanter-ball/leaderboard'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/kanter_ball').kanterLeaderboardValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['leaderboard']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['leaderboard']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'kanter_ball.claim_profile': {
+    methods: ["POST"]
+    pattern: '/api/v1/kanter-ball/players/claim'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/kanter_ball').guestSessionValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/kanter_ball').guestSessionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['claimProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/kanter_ball_controller').default['claimProfile']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'players.accept_league_player_request': {
     methods: ["POST"]
     pattern: '/api/v1/leagues/accept-league-player-request'

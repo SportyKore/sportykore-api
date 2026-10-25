@@ -140,3 +140,82 @@ export const otpVerifyThrottle = limiter.define('otp_verify', (ctx: HttpContext)
       )
     })
 })
+
+// canter ball match create/join/show/timeout-claim — these are the lower-frequency,
+// resource-creating actions, so keep the budget tighter.
+export const canterMatchThrottle = limiter.define('canter_match', (ctx: HttpContext) => {
+  return limiter
+    .allowRequests(40)
+    .every('1 minute')
+    .usingKey(`canter_match_${ctx.auth.user!.id}`)
+    .limitExceeded((error: any) => {
+      error.setStatus(429).setMessage('Slow down, too many match requests')
+    })
+})
+
+// canter ball turn submission — self-limiting already (the 10s shot clock, plus
+// out-of-turn/wrong-cap attempts are rejected server-side), so this budget is just
+// a backstop against scripted abuse, not a cap on normal rapid play.
+export const canterTurnThrottle = limiter.define('canter_turn', (ctx: HttpContext) => {
+  return limiter
+    .allowRequests(60)
+    .every('1 minute')
+    .usingKey(`canter_turn_${ctx.auth.user!.id}`)
+    .limitExceeded((error: any) => {
+      error.setStatus(429).setMessage('Slow down, too many shots')
+    })
+})
+
+// Public spectator endpoints (list active matches, fetch one to watch) — no
+// logged-in user to key on, so this is IP-keyed instead.
+export const canterPublicThrottle = limiter.define('canter_public', (ctx: HttpContext) => {
+  return limiter
+    .allowRequests(60)
+    .every('1 minute')
+    .usingKey(`canter_public_${ctx.request.ip()}`)
+    .limitExceeded((error: any) => {
+      error.setStatus(429).setMessage('Slow down')
+    })
+})
+
+// Kanter Ball (solo vs CPU) guest-session bootstrap — IP-keyed, no identity
+// exists yet at this point.
+export const kanterGuestSessionThrottle = limiter.define(
+  'kanter_guest_session',
+  (ctx: HttpContext) => {
+    return limiter
+      .allowRequests(20)
+      .every('1 minute')
+      .usingKey(`kanter_guest_session_${ctx.request.ip()}`)
+      .limitExceeded((error: any) => {
+        error.setStatus(429).setMessage('Slow down')
+      })
+  }
+)
+
+// Kanter Ball solo match start/finish — guest-token-keyed (there's no
+// ctx.auth.user for guest play), generous enough for normal rapid replay.
+export const kanterMatchThrottle = limiter.define('kanter_match', (ctx: HttpContext) => {
+  const token = String(ctx.request.input('token') ?? ctx.request.ip())
+  return limiter
+    .allowRequests(30)
+    .every('1 minute')
+    .usingKey(`kanter_match_${token}`)
+    .limitExceeded((error: any) => {
+      error.setStatus(429).setMessage('Slow down, too many match requests')
+    })
+})
+
+// Public leaderboard reads.
+export const kanterLeaderboardThrottle = limiter.define(
+  'kanter_leaderboard',
+  (ctx: HttpContext) => {
+    return limiter
+      .allowRequests(60)
+      .every('1 minute')
+      .usingKey(`kanter_leaderboard_${ctx.request.ip()}`)
+      .limitExceeded((error: any) => {
+        error.setStatus(429).setMessage('Slow down')
+      })
+  }
+)

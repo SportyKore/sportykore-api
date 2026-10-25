@@ -20,6 +20,9 @@ import PlayerHighlight from '#models/player_highlight'
 import PlayerSocialLink from '#models/player_social_link'
 import LeaguePlayer from '#models/league_player'
 import Stat from '#models/stat'
+import KanterBallPlayer from '#models/kanter_ball_player'
+import CanterMatch from '#models/canter_match'
+import { calculateRating, type Difficulty, type MatchResult } from '#services/kanter_rating'
 import type { CoachAvailability } from '#types/coach'
 import type { PlayerPosition, PlayerSocialPlatform, PreferredFoot } from '#types/player'
 import StandingService from '#services/standing_service'
@@ -49,6 +52,29 @@ const TEAMS_PER_LEAGUE = 10
 const KNOCKOUT_SEED_TEAM_COUNT = 8
 const GROUP_STAGE_TEAM_COUNT = 8
 const GAMES_PER_SEASON = 21
+
+// Kanter Ball (solo vs CPU) leaderboard demo players — casual, street-
+// football-flavoured guest handles, not real footballer names, since a
+// nickname here is guest-chosen, not a seeded identity.
+const KANTER_BALL_SEED_NICKNAMES = [
+  'StreetKing9ja',
+  'BottleCapBoss',
+  'NoWahalaNaija',
+  'FlickMasterFlex',
+  'LagosLegend',
+  'AbujaAce',
+  'PHCityPro',
+  'KanoKicker',
+  'IbadanIcon',
+  'OwnerVexer',
+  'FirstTouchFred',
+  'CornerKingCap',
+  'WaWaGamer',
+  'VexFreeZone',
+] as const
+// How many of the nicknames above are linked to a seeded User (demoing the
+// "saved profile" badge) — the rest stay pure guests, the common case.
+const KANTER_BALL_LINKED_PLAYER_COUNT = 4
 
 const AFRICAN_COUNTRY_CODES = [
   'ao',
@@ -289,6 +315,7 @@ export default class DataSeeder extends BaseSeeder {
     }
 
     await this.seedFavouriteLeagues(users, leagues)
+    await this.seedKanterBall(users)
   }
 
   private async seedCoachProfiles(users: User[], countries: Country[]) {
@@ -1022,6 +1049,116 @@ export default class DataSeeder extends BaseSeeder {
         { userId: user.id, leagueId: secondLeague.id },
         { userId: user.id, leagueId: secondLeague.id }
       )
+    }
+  }
+
+  /**
+   * Kanter Ball solo (vs CPU) leaderboard demo data. Most entries are pure
+   * guests (no account) since that's the common case; a few are linked to
+   * seeded Users to demo the "saved profile" badge. Ratings are computed
+   * with the real calculateRating() — never hand-picked numbers — so the
+   * leaderboard shows the actual formula's output, including the owner-
+   * collect and manual-quit rows that correctly end up unrated.
+   */
+  private async seedKanterBall(users: User[]) {
+    const players = await Promise.all(
+      KANTER_BALL_SEED_NICKNAMES.map((nickname, index) => {
+        const linkedUser = index < KANTER_BALL_LINKED_PLAYER_COUNT ? users[index] : undefined
+        return KanterBallPlayer.updateOrCreate(
+          { nickname },
+          { nickname, userId: linkedUser?.id ?? null }
+        )
+      })
+    )
+
+    const difficulties: Difficulty[] = ['easy', 'medium', 'hard']
+    let matchIndex = 0
+
+    for (const [playerIndex, player] of players.entries()) {
+      const matchCount = 1 + (playerIndex % 3)
+
+      for (let i = 0; i < matchCount; i += 1) {
+        matchIndex += 1
+        const difficulty = difficulties[matchIndex % difficulties.length]!
+        const daysAgo = matchIndex % 4 === 0 ? 10 + (matchIndex % 14) : matchIndex % 6
+        const startedAt = DateTime.utc().minus({ days: daysAgo, minutes: matchIndex * 7 })
+
+        // Every 7th match is an owner-collect void, every 11th a manual
+        // quit — both correctly end up unrated, proving the leaderboard
+        // filters them out rather than hand-waving it.
+        const isOwnerCollect = matchIndex % 7 === 0
+        const isManualQuit = !isOwnerCollect && matchIndex % 11 === 0
+
+        const playerScore = isOwnerCollect
+          ? matchIndex % 3
+          : matchIndex % 4 === 0
+            ? matchIndex % 3
+            : 1 + (matchIndex % 3)
+        const cpuScore = isOwnerCollect
+          ? (matchIndex + 1) % 3
+          : playerScore > 0 && matchIndex % 5 === 0
+            ? playerScore
+            : Math.max(0, playerScore - 1 - (matchIndex % 2))
+        const result: MatchResult = isOwnerCollect
+          ? 'owner_collect'
+          : playerScore > cpuScore
+            ? 'win'
+            : playerScore < cpuScore
+              ? 'loss'
+              : 'draw'
+        const endedReason = isOwnerCollect ? 'owner_collect' : isManualQuit ? 'manual' : 'full_time'
+
+        const durationSeconds = 25 + ((matchIndex * 13) % 90)
+        const flicks = 6 + ((matchIndex * 3) % 22)
+        const ownerHits = isOwnerCollect
+          ? 17
+          : matchIndex % 5 === 0
+            ? 2 + (matchIndex % 4)
+            : matchIndex % 3
+        const cleanSheet = result === 'win' && cpuScore === 0
+        const comeback = result === 'win' && matchIndex % 9 === 0
+        const clutchGoal = result === 'win' && matchIndex % 6 === 0
+
+        const isRated = !isOwnerCollect && !isManualQuit
+        const rating = isRated
+          ? calculateRating({
+              result,
+              difficulty,
+              playerScore,
+              cpuScore,
+              matchSeconds: 120,
+              durationSeconds,
+              flicks,
+              ownerHits,
+              cleanSheet,
+              comeback,
+              clutchGoal,
+            })
+          : null
+
+        await CanterMatch.create({
+          matchType: 'solo',
+          kanterPlayerId: player.id,
+          status: isManualQuit ? 'abandoned' : 'completed',
+          rulesMode: 'street',
+          difficulty,
+          seed: `seed-${player.id}-${matchIndex}`,
+          result,
+          playerScore,
+          cpuScore,
+          durationSeconds,
+          flicks,
+          ownerHits,
+          cleanSheet,
+          comeback,
+          clutchGoal,
+          rating: rating?.rating ?? null,
+          ratingFormulaVersion: rating?.formulaVersion ?? null,
+          endedReason,
+          startedAt,
+          endedAt: startedAt.plus({ seconds: durationSeconds }),
+        })
+      }
     }
   }
 

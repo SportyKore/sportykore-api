@@ -55,6 +55,125 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime
 }
 
+export class CanterMatchEventSchema extends BaseModel {
+  static $columns = ['canterMatchId', 'createdAt', 'eventType', 'id', 'payload', 'side', 'turnNumber'] as const
+  $columns = CanterMatchEventSchema.$columns
+  @column()
+  declare canterMatchId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare eventType: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare payload: any | null
+  @column()
+  declare side: string | null
+  @column()
+  declare turnNumber: number | null
+}
+
+export class CanterMatchSchema extends BaseModel {
+  static $columns = ['cleanSheet', 'clutchGoal', 'comeback', 'cpuScore', 'createdAt', 'currentTurnUserId', 'difficulty', 'durationSeconds', 'endedAt', 'endedReason', 'flicks', 'guestScore', 'guestUserId', 'hostScore', 'hostUserId', 'id', 'inviteCode', 'inviteExpiresAt', 'kanterPlayerId', 'lastTouch', 'matchType', 'ownerHits', 'playerScore', 'rating', 'ratingFormulaVersion', 'result', 'rulesMode', 'seed', 'startedAt', 'state', 'status', 'tieId', 'turnExpiresAt', 'turnNumber', 'updatedAt', 'winnerUserId'] as const
+  $columns = CanterMatchSchema.$columns
+  @column()
+  declare cleanSheet: boolean
+  @column()
+  declare clutchGoal: boolean
+  @column()
+  declare comeback: boolean
+  @column()
+  declare cpuScore: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currentTurnUserId: number | null
+  @column()
+  declare difficulty: string | null
+  @column()
+  declare durationSeconds: number | null
+  @column.dateTime()
+  declare endedAt: DateTime | null
+  @column()
+  declare endedReason: string | null
+  @column()
+  declare flicks: number
+  @column()
+  declare guestScore: number
+  @column()
+  declare guestUserId: number | null
+  @column()
+  declare hostScore: number
+  @column()
+  declare hostUserId: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare inviteCode: string | null
+  @column.dateTime()
+  declare inviteExpiresAt: DateTime | null
+  @column()
+  declare kanterPlayerId: number | null
+  @column()
+  declare lastTouch: string | null
+  @column()
+  declare matchType: string
+  @column()
+  declare ownerHits: number
+  @column()
+  declare playerScore: number
+  @column()
+  declare rating: number | null
+  @column()
+  declare ratingFormulaVersion: number | null
+  @column()
+  declare result: string | null
+  @column()
+  declare rulesMode: string
+  @column()
+  declare seed: string | null
+  @column.dateTime()
+  declare startedAt: DateTime | null
+  @column()
+  declare state: any | null
+  @column()
+  declare status: string
+  @column()
+  declare tieId: number | null
+  @column.dateTime()
+  declare turnExpiresAt: DateTime | null
+  @column()
+  declare turnNumber: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare winnerUserId: number | null
+}
+
+export class CanterTurnSchema extends BaseModel {
+  static $columns = ['canterMatchId', 'createdAt', 'dragX', 'dragY', 'id', 'resultEvent', 'turnNumber', 'updatedAt', 'userId'] as const
+  $columns = CanterTurnSchema.$columns
+  @column()
+  declare canterMatchId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare dragX: number
+  @column()
+  declare dragY: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare resultEvent: string | null
+  @column()
+  declare turnNumber: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class CoachProfileSchema extends BaseModel {
   static $columns = ['availability', 'bio', 'city', 'countryId', 'createdAt', 'displayName', 'experience', 'id', 'philosophy', 'photoUrl', 'qualifications', 'state', 'updatedAt', 'userId', 'visibility'] as const
   $columns = CoachProfileSchema.$columns
@@ -295,6 +414,38 @@ export class InviteSchema extends BaseModel {
   declare token: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+}
+
+export class KanterBallGuestSessionSchema extends BaseModel {
+  static $columns = ['createdAt', 'expiresAt', 'id', 'kanterPlayerId', 'token', 'updatedAt'] as const
+  $columns = KanterBallGuestSessionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare kanterPlayerId: number
+  @column()
+  declare token: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class KanterBallPlayerSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'nickname', 'updatedAt', 'userId'] as const
+  $columns = KanterBallPlayerSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare nickname: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
 }
 
 export class LeagueNotificationPreferenceSchema extends BaseModel {

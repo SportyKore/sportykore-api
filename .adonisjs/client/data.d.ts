@@ -8,6 +8,7 @@ import type { InferData, InferVariants } from '@adonisjs/core/types/transformers
 import type { InferSharedProps } from '@adonisjs/inertia/types'
 import type AdminTeamManagedTransformer from '#transformers/admin_team_managed_transformer'
 import type AuthSessionTransformer from '#transformers/auth_session_transformer'
+import type CanterMatchTransformer from '#transformers/canter_match_transformer'
 import type CoachProfileTransformer from '#transformers/coach_profile_transformer'
 import type CountryDetailTransformer from '#transformers/country_detail_transformer'
 import type CountryTransformer from '#transformers/country_transformer'
@@ -48,6 +49,10 @@ export namespace Data {
   export type AuthSession = InferData<AuthSessionTransformer>
   export namespace AuthSession {
     export type Variants = InferVariants<AuthSessionTransformer>
+  }
+  export type CanterMatch = InferData<CanterMatchTransformer>
+  export namespace CanterMatch {
+    export type Variants = InferVariants<CanterMatchTransformer>
   }
   export type CoachProfile = InferData<CoachProfileTransformer>
   export namespace CoachProfile {
