@@ -140,3 +140,10 @@ export const otpVerifyThrottle = limiter.define('otp_verify', (ctx: HttpContext)
       )
     })
 })
+
+// Browser registrations are anonymous; never key this limiter on an authenticated user.
+export const playerRegistrationThrottle = limiter.define(
+  'player_registration',
+  (ctx: HttpContext) =>
+    limiter.allowRequests(20).every('1 hour').usingKey(`player_registration_${ctx.request.ip()}`)
+)

@@ -26,7 +26,7 @@ export default class InviteService {
       teamId,
       invitedUserId: invitedUserId ?? null,
       status: 'pending',
-      expiresAt: DateTime.now().plus({ days: 7 }),
+      expiresAt: DateTime.utc().plus({ days: 7 }),
     })
     return `/join/${token}`
   }

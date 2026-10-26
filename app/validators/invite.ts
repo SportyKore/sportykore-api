@@ -4,7 +4,7 @@ import { optionalImage, resourceId } from '#validators/common'
 export const generateInviteValidator = vine.create({
   leagueId: resourceId('leagues'),
   seasonId: resourceId('seasons'),
-  teamId: resourceId('teams'),
+  teamId: resourceId('teams').nullable().optional(),
   invitedUserId: resourceId('users').optional(),
 })
 

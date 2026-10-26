@@ -7,6 +7,37 @@ export interface ApiDefinition {
       serve: typeof routes['drive.fs.serve']
     }
   }
+  players: {
+    register: typeof routes['players.register'] & {
+      store: typeof routes['players.register.store']
+      complete: typeof routes['players.register.complete']
+    }
+    claim: typeof routes['players.claim']
+    doesUserHavePlayerProfile: typeof routes['players.does_user_have_player_profile']
+    show: typeof routes['players.show']
+    acceptLeaguePlayerRequest: typeof routes['players.accept_league_player_request']
+    leaguePlayerRequests: typeof routes['players.league_player_requests']
+    assignTeam: typeof routes['players.assign_team']
+  }
+  invites: {
+    generate: typeof routes['invites.generate']
+    accept: typeof routes['invites.accept']
+    completeProfileAndAccept: typeof routes['invites.complete_profile_and_accept']
+  }
+  rosterSettings: {
+    show: typeof routes['roster_settings.show']
+    update: typeof routes['roster_settings.update']
+  }
+  roster: {
+    index: typeof routes['roster.index']
+    store: typeof routes['roster.store']
+    assign: typeof routes['roster.assign']
+    update: typeof routes['roster.update']
+  }
+  playerClaims: {
+    store: typeof routes['player_claims.store']
+    redeem: typeof routes['player_claims.redeem']
+  }
   eventStream: typeof routes['event_stream']
   subscribe: typeof routes['subscribe']
   unsubscribe: typeof routes['unsubscribe']
@@ -104,13 +135,6 @@ export interface ApiDefinition {
     update: typeof routes['teams.update']
     destroy: typeof routes['teams.destroy']
   }
-  players: {
-    doesUserHavePlayerProfile: typeof routes['players.does_user_have_player_profile']
-    show: typeof routes['players.show']
-    acceptLeaguePlayerRequest: typeof routes['players.accept_league_player_request']
-    leaguePlayerRequests: typeof routes['players.league_player_requests']
-    assignTeam: typeof routes['players.assign_team']
-  }
   coaches: {
     show: typeof routes['coaches.show']
   }
@@ -132,11 +156,6 @@ export interface ApiDefinition {
     store: typeof routes['me_coach.store']
     update: typeof routes['me_coach.update']
     photo: typeof routes['me_coach.photo']
-  }
-  invites: {
-    accept: typeof routes['invites.accept']
-    completeProfileAndAccept: typeof routes['invites.complete_profile_and_accept']
-    generate: typeof routes['invites.generate']
   }
   favouriteLeagues: {
     store: typeof routes['favourite_leagues.store']

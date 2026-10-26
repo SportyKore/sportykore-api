@@ -1,0 +1,306 @@
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans_400Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans_600SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans_700Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+.player-registration {
+  --registration-purple: #5d2a8e;
+  --registration-gold: #e6a817;
+  --registration-paper: #fff;
+  --registration-background: #f8fafc;
+  --registration-ink: #000;
+  --registration-muted: #4b5563;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 40px 20px;
+  background: var(--registration-background);
+  color: var(--registration-ink);
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
+}
+.player-registration .registration-sheet {
+  max-width: 580px;
+  margin: 0 auto;
+  background: var(--registration-paper);
+  border-radius: 28px;
+  overflow: hidden;
+}
+.player-registration .registration-header {
+  margin: 0;
+  padding: 32px 36px 64px;
+  text-align: center;
+  background:
+    linear-gradient(#000c, #000d),
+    url('/images/sportykore-football.jpeg') center 48% / cover;
+  color: var(--registration-paper);
+}
+.player-registration .registration-logo {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: white;
+  border-radius: 16px;
+  transform: rotate(12deg);
+}
+.player-registration .registration-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.player-registration .registration-league {
+  font-size: 24px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.player-registration .registration-team {
+  overflow-wrap: anywhere;
+}
+.player-registration .registration-main {
+  display: block;
+  min-height: 0;
+  margin: 0;
+  padding: 32px 36px;
+  position: relative;
+  margin-top: -28px;
+  border-radius: 28px 28px 0 0;
+  border: 0;
+  background: var(--registration-paper);
+}
+.player-registration h1 {
+  font-size: clamp(28px, 6vw, 36px);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--registration-ink);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.player-registration .registration-intro {
+  margin-bottom: 20px;
+}
+.player-registration .registration-hint {
+  color: var(--registration-muted);
+  font-size: 14px;
+  margin: 8px 0 20px;
+}
+.player-registration form {
+  display: block;
+  margin-top: 24px;
+}
+.player-registration .registration-fields {
+  display: grid;
+  gap: 24px;
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.player-registration label {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.player-registration label span {
+  font-weight: 400;
+}
+.player-registration input:not([type='checkbox']),
+.player-registration select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: var(--registration-paper);
+  color: var(--registration-ink);
+  padding: 10px 12px;
+  font: inherit;
+}
+.player-registration input[type='file'] {
+  height: auto;
+  font-size: 14px;
+}
+.player-registration input::file-selector-button {
+  padding: 8px;
+  margin-right: 10px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--registration-background);
+  color: var(--registration-purple);
+  font: inherit;
+  cursor: pointer;
+}
+.player-registration :focus-visible {
+  outline: 3px solid var(--registration-purple);
+  outline-offset: 3px;
+}
+.player-registration [aria-invalid='true'] {
+  border: 2px solid var(--registration-purple);
+}
+.player-registration .registration-feedback {
+  padding: 16px;
+  border-left: 4px solid var(--registration-gold);
+  background: var(--registration-background);
+  margin-top: 24px;
+  overflow-wrap: anywhere;
+}
+.player-registration .registration-error {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--registration-purple);
+  margin-top: 8px;
+}
+.player-registration .registration-confirm {
+  padding: 16px;
+  background: var(--registration-background);
+  border-radius: 16px;
+}
+.player-registration .registration-confirm label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  cursor: pointer;
+}
+.player-registration input[type='checkbox'] {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  margin-top: 3px;
+  accent-color: var(--registration-purple);
+}
+.player-registration button {
+  min-height: 50px;
+  background: var(--registration-purple);
+  color: var(--registration-paper);
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+}
+.player-registration button:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 2px var(--registration-gold);
+}
+.player-registration button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.player-registration [role='status']:not(:empty) {
+  margin-top: 12px;
+}
+.player-registration .registration-footer {
+  padding: 20px 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--registration-muted);
+  background: var(--registration-background);
+}
+.player-registration .registration-success-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--registration-gold);
+  color: var(--registration-purple);
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+.player-registration .registration-receipt {
+  border-block: 1px solid var(--registration-background);
+  padding-block: 16px;
+  margin-bottom: 24px;
+}
+.player-registration .registration-receipt > div {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 12px;
+  padding: 8px 0;
+}
+.player-registration dt {
+  color: var(--registration-muted);
+}
+.player-registration dd {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .player-registration {
+    padding: 0;
+    background: var(--registration-paper);
+  }
+  .player-registration .registration-sheet {
+    border-radius: 0;
+  }
+  .player-registration .registration-header {
+    padding: 28px 24px 60px;
+  }
+  .player-registration .registration-main {
+    padding: 28px 24px;
+  }
+}
+
+.player-registration * {
+  box-sizing: border-box;
+}
+.player-registration label {
+  display: block;
+}
+.player-registration button,
+.player-registration .registration-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 20px;
+  border: 0;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.player-registration .registration-action {
+  background: var(--registration-purple);
+  color: white;
+  border-radius: 16px;
+  margin-top: 24px;
+}
+.player-registration form > button {
+  margin-top: 20px;
+}
+.player-registration form > label {
+  margin-top: 20px;
+}
+.player-registration label > input {
+  margin-top: 8px;
+}
+.player-registration .secondary {
+  background: var(--registration-background);
+  color: var(--registration-purple);
+}
+.player-registration section {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.player-registration section > p {
+  margin-bottom: 20px;
+}
+.player-registration section small {
+  display: block;
+  margin-top: 24px;
+  color: var(--registration-muted);
+}
+.player-registration .registration-action:hover {
+  background: #4f2478;
+}

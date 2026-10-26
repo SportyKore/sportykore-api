@@ -19,6 +19,162 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'players.register': {
+    methods: ["GET","HEAD"]
+    pattern: '/join/:token'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/public_players_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/public_players_controller').default['show']>>>
+    }
+  }
+  'players.register.store': {
+    methods: ["POST"]
+    pattern: '/join/:token'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/public_player').publicPlayerValidator)>>
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/public_player').publicPlayerValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/public_players_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/public_players_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'players.register.complete': {
+    methods: ["GET","HEAD"]
+    pattern: '/join/:token/complete/:requestId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { token: ParamValue; requestId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/public_players_controller').default['complete']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/public_players_controller').default['complete']>>>
+    }
+  }
+  'invites.generate': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/invites/generate'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/invite').generateInviteValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/invites_controller').default['generate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/invites_controller').default['generate']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'roster_settings.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/roster/:leagueId/settings'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { leagueId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/roster').rosterIdValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/roster_settings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/roster_settings_controller').default['show']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'roster_settings.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/roster/:leagueId/settings'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/roster').rosterSettingsValidator)>|InferInput<(typeof import('#validators/roster').rosterIdValidator)>>
+      paramsTuple: [ParamValue]
+      params: { leagueId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/roster').rosterSettingsValidator)>|InferInput<(typeof import('#validators/roster').rosterIdValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/roster_settings_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/roster_settings_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'roster.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/roster/:leagueId/:seasonId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { leagueId: ParamValue; seasonId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/roster').rosterParamsValidator)>|InferInput<(typeof import('#validators/roster').rosterListValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'roster.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/roster/:leagueId/:seasonId/players'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/roster').rosterCreateValidator)>|InferInput<(typeof import('#validators/roster').rosterParamsValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { leagueId: ParamValue; seasonId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/roster').rosterCreateValidator)>|InferInput<(typeof import('#validators/roster').rosterParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'roster.assign': {
+    methods: ["POST"]
+    pattern: '/api/v1/roster/:leagueId/:seasonId/assign'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/roster').rosterAssignValidator)>|InferInput<(typeof import('#validators/roster').rosterParamsValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { leagueId: ParamValue; seasonId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/roster').rosterAssignValidator)>|InferInput<(typeof import('#validators/roster').rosterParamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['assign']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['assign']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'roster.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/roster/:leagueId/:seasonId/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/roster').rosterApprovalValidator)>|InferInput<(typeof import('#validators/roster').rosterParamsValidator)>|InferInput<(typeof import('#validators/roster').rosterIdValidator)>>
+      paramsTuple: [ParamValue, ParamValue, ParamValue]
+      params: { leagueId: ParamValue; seasonId: ParamValue; id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/roster').rosterApprovalValidator)>|InferInput<(typeof import('#validators/roster').rosterParamsValidator)>|InferInput<(typeof import('#validators/roster').rosterIdValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/roster_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'player_claims.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/player-claims'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/player_claim').createPlayerClaimValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/player_claim').createPlayerClaimValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/player_claims_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/player_claims_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'player_claims.redeem': {
+    methods: ["POST"]
+    pattern: '/api/v1/player-claims/:token/redeem'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/player_claims_controller').default['redeem']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/player_claims_controller').default['redeem']>>>
+    }
+  }
+  'players.claim': {
+    methods: ["GET","HEAD"]
+    pattern: '/claim/:token'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/player_claims_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/player_claims_controller').default['show']>>>
+    }
+  }
   'event_stream': {
     methods: ["GET","HEAD"]
     pattern: '/__transmit/events'
@@ -1493,18 +1649,6 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/league_player').createLeaguePlayerValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/players_controller').default['assignTeam']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/players_controller').default['assignTeam']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'invites.generate': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/v1/invites/generate'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: ExtractQueryForGet<InferInput<(typeof import('#validators/invite').generateInviteValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/invites_controller').default['generate']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/invites_controller').default['generate']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'league_players.roster': {

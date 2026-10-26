@@ -17,5 +17,9 @@ declare module '@adonisjs/inertia/types' {
     'errors/not_found': ExtractProps<(typeof import('../../inertia/pages/errors/not_found.tsx'))['default']>
     'errors/server_error': ExtractProps<(typeof import('../../inertia/pages/errors/server_error.tsx'))['default']>
     'home': ExtractProps<(typeof import('../../inertia/pages/home.tsx'))['default']>
+    'players/claim': ExtractProps<(typeof import('../../inertia/pages/players/claim.tsx'))['default']>
+    'players/register': ExtractProps<(typeof import('../../inertia/pages/players/register.tsx'))['default']>
+    'players/registered': ExtractProps<(typeof import('../../inertia/pages/players/registered.tsx'))['default']>
+    'players/unavailable': ExtractProps<(typeof import('../../inertia/pages/players/unavailable.tsx'))['default']>
   }
 }
