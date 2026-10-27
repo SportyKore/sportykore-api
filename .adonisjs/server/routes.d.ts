@@ -5,6 +5,19 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'players.register': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'players.register.store': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'players.register.complete': { paramsTuple: [ParamValue,ParamValue]; params: {'token': ParamValue,'requestId': ParamValue} }
+    'invites.generate': { paramsTuple?: []; params?: {} }
+    'roster_settings.show': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'roster_settings.update': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'roster.index': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'roster.store': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'roster.assign': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'roster.update': { paramsTuple: [ParamValue,ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue,'id': ParamValue} }
+    'player_claims.store': { paramsTuple?: []; params?: {} }
+    'player_claims.redeem': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'players.claim': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
@@ -128,7 +141,6 @@ export type ScannedRoutes = {
     'standing_zones.destroy': { paramsTuple: [ParamValue]; params: {'zid': ParamValue} }
     'audit_logs.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
     'players.assign_team': { paramsTuple?: []; params?: {} }
-    'invites.generate': { paramsTuple?: []; params?: {} }
     'league_players.roster': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
     'league_players.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'league_players.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -142,6 +154,12 @@ export type ScannedRoutes = {
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'players.register': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'players.register.complete': { paramsTuple: [ParamValue,ParamValue]; params: {'token': ParamValue,'requestId': ParamValue} }
+    'invites.generate': { paramsTuple?: []; params?: {} }
+    'roster_settings.show': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'roster.index': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'players.claim': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'secret_santa.index': { paramsTuple?: []; params?: {} }
     'auth_users.me': { paramsTuple?: []; params?: {} }
@@ -178,11 +196,16 @@ export type ScannedRoutes = {
     'standing_adjustments.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_zones.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'audit_logs.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
-    'invites.generate': { paramsTuple?: []; params?: {} }
     'league_players.roster': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'players.register': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'players.register.complete': { paramsTuple: [ParamValue,ParamValue]; params: {'token': ParamValue,'requestId': ParamValue} }
+    'invites.generate': { paramsTuple?: []; params?: {} }
+    'roster_settings.show': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'roster.index': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'players.claim': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'secret_santa.index': { paramsTuple?: []; params?: {} }
     'auth_users.me': { paramsTuple?: []; params?: {} }
@@ -219,10 +242,14 @@ export type ScannedRoutes = {
     'standing_adjustments.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_zones.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'audit_logs.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
-    'invites.generate': { paramsTuple?: []; params?: {} }
     'league_players.roster': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
   }
   POST: {
+    'players.register.store': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'roster.store': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'roster.assign': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
+    'player_claims.store': { paramsTuple?: []; params?: {} }
+    'player_claims.redeem': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
     'secret_santa.login': { paramsTuple?: []; params?: {} }
@@ -283,6 +310,14 @@ export type ScannedRoutes = {
     'games.store': { paramsTuple?: []; params?: {} }
     'stats.store': { paramsTuple?: []; params?: {} }
     'stats.record_substitutions': { paramsTuple?: []; params?: {} }
+  }
+  PATCH: {
+    'roster_settings.update': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'roster.update': { paramsTuple: [ParamValue,ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue,'id': ParamValue} }
+    'game_score.accredit': { paramsTuple: [ParamValue,ParamValue]; params: {'gameId': ParamValue,'statId': ParamValue} }
+    'game_lineups.update': { paramsTuple: [ParamValue,ParamValue]; params: {'gameId': ParamValue,'id': ParamValue} }
+    'leagues.soft_delete': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'leagues.reactivate': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
   }
   DELETE: {
     'auth.delete_account': { paramsTuple?: []; params?: {} }
@@ -319,12 +354,6 @@ export type ScannedRoutes = {
     'league_players.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'games.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stats.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
-  PATCH: {
-    'game_score.accredit': { paramsTuple: [ParamValue,ParamValue]; params: {'gameId': ParamValue,'statId': ParamValue} }
-    'game_lineups.update': { paramsTuple: [ParamValue,ParamValue]; params: {'gameId': ParamValue,'id': ParamValue} }
-    'leagues.soft_delete': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
-    'leagues.reactivate': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

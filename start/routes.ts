@@ -13,6 +13,7 @@ import router from '@adonisjs/core/services/router'
 import transmit from '@adonisjs/transmit/services/main'
 import {
   authThrottle,
+  playerRegistrationThrottle,
   clockUpdateThrottle,
   gameUpdateThrottle,
   globalThrottle,
@@ -29,6 +30,45 @@ const PushNotificationsController = () => import('#controllers/push_notification
 const SecretSantaController = () => import('#controllers/secret_santa_controller')
 const CoachesController = () => import('#controllers/coaches_controller')
 const MeCoachController = () => import('#controllers/me_coach_controller')
+
+const PublicPlayersController = () => import('#controllers/public_players_controller')
+router.get('/join/:token', [PublicPlayersController, 'show']).as('players.register')
+router
+  .post('/join/:token', [PublicPlayersController, 'store'])
+  .use(playerRegistrationThrottle)
+  .as('players.register.store')
+router
+  .get('/join/:token/complete/:requestId', [PublicPlayersController, 'complete'])
+  .as('players.register.complete')
+router
+  .get('/api/v1/invites/generate', [controllers.Invites, 'generate'])
+  .use(middleware.apiAuth())
+  .use(inviteThrottle)
+
+const RosterController = () => import('#controllers/roster_controller')
+const RosterSettingsController = () => import('#controllers/roster_settings_controller')
+const PlayerClaimsController = () => import('#controllers/player_claims_controller')
+router
+  .group(() => {
+    router.get('/:leagueId/settings', [RosterSettingsController, 'show'])
+    router.patch('/:leagueId/settings', [RosterSettingsController, 'update'])
+    router.get('/:leagueId/:seasonId', [RosterController, 'index'])
+    router.post('/:leagueId/:seasonId/players', [RosterController, 'store'])
+    router.post('/:leagueId/:seasonId/assign', [RosterController, 'assign'])
+    router.patch('/:leagueId/:seasonId/:id', [RosterController, 'update'])
+  })
+  .prefix('/api/v1/roster')
+  .use(middleware.apiAuth())
+  .use(globalThrottle)
+router
+  .post('/api/v1/player-claims', [PlayerClaimsController, 'store'])
+  .use(middleware.apiAuth())
+  .use(inviteThrottle)
+router
+  .post('/api/v1/player-claims/:token/redeem', [PlayerClaimsController, 'redeem'])
+  .use(middleware.apiAuth())
+  .use(authThrottle)
+router.get('/claim/:token', [PlayerClaimsController, 'show']).as('players.claim')
 
 transmit.registerRoutes()
 
@@ -314,8 +354,6 @@ router
         router.get('leagues/:leagueId/audit-logs', [controllers.AuditLogs, 'index'])
 
         router.post('leagues/assign-team', [controllers.Players, 'assignTeam'])
-
-        router.get('invites/generate', [controllers.Invites, 'generate']).use(inviteThrottle)
 
         router.get('leagues/:leagueId/seasons/:seasonId/roster', [
           controllers.LeaguePlayers,

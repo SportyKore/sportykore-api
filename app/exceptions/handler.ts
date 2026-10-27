@@ -34,6 +34,21 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
+    const isMissingRoute =
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'E_ROUTE_NOT_FOUND'
+    const path = ctx.request.url()
+    const isWebNavigation =
+      ['GET', 'HEAD'].includes(ctx.request.method()) &&
+      ctx.request.accepts(['html', 'json']) === 'html' &&
+      !/^\/(api|assets|images|fonts|uploads|__)(?:\/|$)/.test(path) &&
+      !/\.[^/]+$/.test(path)
+    if (isMissingRoute && isWebNavigation) {
+      ctx.response.header('Referrer-Policy', 'no-referrer')
+      return ctx.response.redirect('https://sportykore.com')
+    }
     return super.handle(error, ctx)
   }
 
