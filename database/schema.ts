@@ -292,7 +292,7 @@ export class GameLineupSchema extends BaseModel {
 }
 
 export class GameSchema extends BaseModel {
-  static $columns = ['awayPenaltyScore', 'awayScore', 'awayTeamId', 'bracketPosition', 'createdAt', 'currentMinute', 'extraTimeDuration', 'extraTimeStartedAt', 'firstHalfDuration', 'firstHalfStartedAt', 'homePenaltyScore', 'homeScore', 'homeTeamId', 'id', 'leagueId', 'leg', 'pausedAt', 'pausedFromStatus', 'playedAt', 'round', 'seasonId', 'secondHalfDuration', 'secondHalfStartedAt', 'stageGroupId', 'stageId', 'status', 'tieId', 'updatedAt', 'venueId', 'venueName', 'winnerTeamId'] as const
+  static $columns = ['awayPenaltyScore', 'awayScore', 'awayTeamId', 'bracketPosition', 'createdAt', 'currentMinute', 'extraTimeDuration', 'extraTimeStartedAt', 'firstHalfDuration', 'firstHalfStartedAt', 'homePenaltyScore', 'homeScore', 'homeTeamId', 'id', 'leagueId', 'leg', 'pausedAt', 'pausedFromStatus', 'playedAt', 'round', 'roundNumber', 'seasonId', 'secondHalfDuration', 'secondHalfStartedAt', 'stageGroupId', 'stageId', 'status', 'tieId', 'updatedAt', 'venueId', 'venueName', 'winnerTeamId'] as const
   $columns = GameSchema.$columns
   @column()
   declare awayPenaltyScore: number | null
@@ -334,6 +334,8 @@ export class GameSchema extends BaseModel {
   declare playedAt: DateTime
   @column()
   declare round: string | null
+  @column()
+  declare roundNumber: number | null
   @column()
   declare seasonId: number
   @column()

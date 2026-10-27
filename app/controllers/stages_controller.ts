@@ -8,15 +8,24 @@ import BracketService from '#services/bracket_service'
 import GroupStageService from '#services/group_stage_service'
 import StageStandingService from '#services/stage_standing_service'
 import QualifierService from '#services/qualifier_service'
+import SwissPairingService from '#services/swiss_pairing_service'
+import SwissQualificationService from '#services/swiss_qualification_service'
 import StageTransformer from '#transformers/stage_transformer'
 import TieTransformer from '#transformers/tie_transformer'
 import {
   assignGroupTeamsValidator,
+  assignSwissTeamsValidator,
+  confirmSwissPlayoffValidator,
+  confirmSwissRoundValidator,
   createGroupStageValidator,
   createKnockoutStageValidator,
+  createSwissStageValidator,
   generateKnockoutFromGroupValidator,
+  generateKnockoutFromSwissValidator,
   nextRoundValidator,
+  proposeSwissRoundValidator,
   seedKnockoutStageValidator,
+  updateSwissStageConfigValidator,
 } from '#validators/stage'
 import type { KnockoutStageConfig } from '#types/stage'
 import { BRACKET_ROUNDS } from '#types/stage'
@@ -28,7 +37,9 @@ export default class StagesController {
     protected bracketService: BracketService,
     protected groupStageService: GroupStageService,
     protected stageStandingService: StageStandingService,
-    protected qualifierService: QualifierService
+    protected qualifierService: QualifierService,
+    protected swissPairingService: SwissPairingService,
+    protected swissQualificationService: SwissQualificationService
   ) {}
 
   async store({ params, request, response, auth }: HttpContext) {
@@ -52,6 +63,32 @@ export default class StagesController {
       )
       return response.created({
         message: 'Group stage created successfully',
+        id: stage.id,
+        groups: groups.map((g) => ({
+          id: g.id,
+          name: g.name,
+          sequence: g.sequence,
+          stageId: g.stageId,
+        })),
+      })
+    }
+
+    if (stageType === 'swiss') {
+      const data = await request.validateUsing(createSwissStageValidator)
+      const { stage, groups } = await this.swissPairingService.createSwissStage(
+        leagueId,
+        data.seasonId,
+        {
+          name: data.name,
+          sequence: data.sequence,
+          groupNames: data.groupNames,
+          config: data.config,
+        },
+        undefined,
+        { actorId, ipAddress }
+      )
+      return response.created({
+        message: 'Swiss stage created successfully',
         id: stage.id,
         groups: groups.map((g) => ({
           id: g.id,
@@ -107,6 +144,166 @@ export default class StagesController {
       audit
     )
     return response.ok({ message: 'Teams assigned', assignments })
+  }
+
+  async assignSwissTeams({ params, request, response, auth }: HttpContext) {
+    const data = await request.validateUsing(assignSwissTeamsValidator)
+    const stageId = Number(params.id)
+    const audit = await this.auditFromStage(stageId, request, auth)
+
+    if (data.mode === 'manual') {
+      if (!data.assignments || data.assignments.length === 0) {
+        throw new Exception('assignments are required when mode is manual', { status: 422 })
+      }
+      const assignments = await this.swissPairingService.assignTeams(
+        stageId,
+        { mode: 'manual', assignments: data.assignments },
+        audit
+      )
+      return response.ok({ message: 'Teams assigned', assignments })
+    }
+
+    if (!data.teamIds || data.teamIds.length < 2) {
+      throw new Exception('teamIds are required when mode is auto', { status: 422 })
+    }
+    const assignments = await this.swissPairingService.assignTeams(
+      stageId,
+      { mode: 'auto', teamIds: data.teamIds, shuffle: data.shuffle },
+      audit
+    )
+    return response.ok({ message: 'Teams assigned', assignments })
+  }
+
+  async proposeSwissRound({ params, request, serialize }: HttpContext) {
+    const data = await request.validateUsing(proposeSwissRoundValidator)
+    const stageId = Number(params.id)
+    const stageGroupId = Number(params.groupId)
+    const roundNumber = Number(params.roundNumber)
+
+    if (data.mode === 'manual' && (!data.fixtures || data.fixtures.length === 0)) {
+      throw new Exception('fixtures are required when mode is manual', { status: 422 })
+    }
+
+    const input =
+      data.mode === 'manual'
+        ? {
+            mode: 'manual' as const,
+            fixtures: data.fixtures!,
+            allowIncompleteRounds: data.allowIncompleteRounds,
+          }
+        : { mode: 'auto' as const, allowIncompleteRounds: data.allowIncompleteRounds }
+
+    const result = await this.swissPairingService.proposeRound(
+      stageId,
+      stageGroupId,
+      roundNumber,
+      input
+    )
+    return serialize(result)
+  }
+
+  async confirmSwissRound({ params, request, response, auth }: HttpContext) {
+    const data = await request.validateUsing(confirmSwissRoundValidator)
+    const stageId = Number(params.id)
+    const stageGroupId = Number(params.groupId)
+    const roundNumber = Number(params.roundNumber)
+    const audit = await this.auditFromStage(stageId, request, auth)
+
+    const result = await this.swissPairingService.confirmRound(
+      stageId,
+      stageGroupId,
+      roundNumber,
+      {
+        fixtures: data.fixtures,
+        playedAt: data.playedAt,
+        venueName: data.venueName,
+        venueId: data.venueId,
+        byeTeamId: data.byeTeamId ?? null,
+        forceOverride: data.forceOverride,
+      },
+      audit
+    )
+
+    return response.created({ message: 'Round confirmed', count: result.count })
+  }
+
+  async updateSwissConfig({ params, request, response, auth }: HttpContext) {
+    const data = await request.validateUsing(updateSwissStageConfigValidator)
+    const stageId = Number(params.id)
+    const audit = await this.auditFromStage(stageId, request, auth)
+
+    await this.swissPairingService.updateConfig(stageId, data.config, audit)
+    return response.ok({ message: 'Swiss stage config updated' })
+  }
+
+  async swissQualification({ params, serialize }: HttpContext) {
+    const result = await this.swissQualificationService.resolveGroupQualification(
+      Number(params.id),
+      Number(params.groupId)
+    )
+    return serialize(result)
+  }
+
+  async proposeSwissPlayoff({ params, serialize }: HttpContext) {
+    const result = await this.swissQualificationService.proposePlayoff(
+      Number(params.id),
+      Number(params.groupId)
+    )
+    return serialize(result)
+  }
+
+  async confirmSwissPlayoff({ params, request, response, auth }: HttpContext) {
+    const data = await request.validateUsing(confirmSwissPlayoffValidator)
+    const stageId = Number(params.id)
+    const stageGroupId = Number(params.groupId)
+    const audit = await this.auditFromStage(stageId, request, auth)
+
+    const result = await this.swissQualificationService.confirmPlayoff(
+      stageId,
+      stageGroupId,
+      {
+        fixtures: data.fixtures,
+        playedAt: data.playedAt,
+        venueName: data.venueName,
+        venueId: data.venueId,
+      },
+      audit
+    )
+
+    return response.created({ message: 'Playoff confirmed', count: result.count })
+  }
+
+  async previewSwissKnockout({ params, serialize }: HttpContext) {
+    const result = await this.swissQualificationService.previewKnockoutQualifiers(Number(params.id))
+    return serialize(result)
+  }
+
+  async generateKnockoutFromSwiss({ params, request, response, auth }: HttpContext) {
+    const data = await request.validateUsing(generateKnockoutFromSwissValidator)
+    const stageId = Number(params.id)
+    const audit = await this.auditFromStage(stageId, request, auth)
+
+    const knockout: KnockoutStageConfig | undefined = data.knockout
+      ? {
+          format: {
+            starting_round: data.knockout.format?.starting_round,
+            has_third_place: data.knockout.format?.has_third_place ?? false,
+          },
+          ties: data.knockout.ties,
+        }
+      : undefined
+
+    const result = await this.swissQualificationService.generateKnockoutFromSwiss(
+      stageId,
+      { name: data.name, groupOrder: data.groupOrder, knockout },
+      audit
+    )
+
+    return response.created({
+      stage: StageTransformer.transform(result.stage),
+      ties: TieTransformer.transform(result.ties)?.depth(4),
+      qualifiers: result.qualifiers,
+    })
   }
 
   async generateFixtures({ params, response, request, auth }: HttpContext) {

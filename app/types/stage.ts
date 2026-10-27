@@ -1,4 +1,4 @@
-export const STAGE_TYPES = ['round_robin', 'group', 'knockout', 'playoff'] as const
+export const STAGE_TYPES = ['round_robin', 'group', 'knockout', 'playoff', 'swiss'] as const
 export type StageType = (typeof STAGE_TYPES)[number]
 
 export const STAGE_STATUSES = ['upcoming', 'active', 'completed'] as const
@@ -56,4 +56,34 @@ export type KnockoutStageConfig = {
 export type GroupStageConfig = {
   format: { group_count: number; double_round_robin?: boolean }
   advancement: { per_group: number }
+}
+
+export const SWISS_BYE_HANDLINGS = ['warn', 'award_points', 'exclude'] as const
+export type SwissByeHandling = (typeof SWISS_BYE_HANDLINGS)[number]
+
+export const SWISS_PLAYOFF_PAIRINGS = ['rank_cross', 'seeded'] as const
+export type SwissPlayoffPairing = (typeof SWISS_PLAYOFF_PAIRINGS)[number]
+
+export type SwissQualificationRule = {
+  directCount: number
+  playoffRankFrom: number
+  playoffRankTo: number
+  playoffPairing?: SwissPlayoffPairing
+}
+
+export type SwissStageConfig = {
+  format: {
+    rounds: number
+    byeHandling: SwissByeHandling
+    /** Stored once (round 1) so the random draw is reproducible. */
+    seed?: number
+  }
+  /** Default qualification rule, used by any group without its own override below. */
+  qualification: SwissQualificationRule
+  /** Per-group override — campuses can have different direct/playoff cutoffs. Keyed by stageGroupId. */
+  qualificationByGroup?: Record<string, SwissQualificationRule>
+  constraints?: {
+    /** Pairs of teams that must never be drawn against each other. */
+    noPair?: Array<{ teamIds: number[] }>
+  }
 }

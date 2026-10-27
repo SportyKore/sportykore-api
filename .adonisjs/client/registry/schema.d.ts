@@ -1427,10 +1427,10 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/api/v1/leagues/:leagueId/stages'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/stage').createGroupStageValidator)>|InferInput<(typeof import('#validators/stage').createKnockoutStageValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').createGroupStageValidator)>|InferInput<(typeof import('#validators/stage').createSwissStageValidator)>|InferInput<(typeof import('#validators/stage').createKnockoutStageValidator)>>
       paramsTuple: [ParamValue]
       params: { leagueId: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/stage').createGroupStageValidator)>|InferInput<(typeof import('#validators/stage').createKnockoutStageValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').createGroupStageValidator)>|InferInput<(typeof import('#validators/stage').createSwissStageValidator)>|InferInput<(typeof import('#validators/stage').createKnockoutStageValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
@@ -1481,6 +1481,114 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['generateFixtures']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['generateFixtures']>>>
+    }
+  }
+  'stages.update_swiss_config': {
+    methods: ["PUT"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/config'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').updateSwissStageConfigValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').updateSwissStageConfigValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['updateSwissConfig']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['updateSwissConfig']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'stages.assign_swiss_teams': {
+    methods: ["POST"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/assign'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').assignSwissTeamsValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').assignSwissTeamsValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['assignSwissTeams']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['assignSwissTeams']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'stages.propose_swiss_round': {
+    methods: ["POST"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/groups/:groupId/rounds/:roundNumber/propose'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').proposeSwissRoundValidator)>>
+      paramsTuple: [ParamValue, ParamValue, ParamValue]
+      params: { id: ParamValue; groupId: ParamValue; roundNumber: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').proposeSwissRoundValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['proposeSwissRound']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['proposeSwissRound']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'stages.confirm_swiss_round': {
+    methods: ["POST"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/groups/:groupId/rounds/:roundNumber/confirm'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').confirmSwissRoundValidator)>>
+      paramsTuple: [ParamValue, ParamValue, ParamValue]
+      params: { id: ParamValue; groupId: ParamValue; roundNumber: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').confirmSwissRoundValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['confirmSwissRound']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['confirmSwissRound']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'stages.swiss_qualification': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/groups/:groupId/qualification'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; groupId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['swissQualification']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['swissQualification']>>>
+    }
+  }
+  'stages.propose_swiss_playoff': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/groups/:groupId/playoff/propose'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; groupId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['proposeSwissPlayoff']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['proposeSwissPlayoff']>>>
+    }
+  }
+  'stages.confirm_swiss_playoff': {
+    methods: ["POST"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/groups/:groupId/playoff/confirm'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').confirmSwissPlayoffValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; groupId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').confirmSwissPlayoffValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['confirmSwissPlayoff']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['confirmSwissPlayoff']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'stages.preview_swiss_knockout': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/generate-knockout/preview'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['previewSwissKnockout']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['previewSwissKnockout']>>>
+    }
+  }
+  'stages.generate_knockout_from_swiss': {
+    methods: ["POST"]
+    pattern: '/api/v1/leagues/stages/:id/swiss/generate-knockout'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/stage').generateKnockoutFromSwissValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/stage').generateKnockoutFromSwissValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['generateKnockoutFromSwiss']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/stages_controller').default['generateKnockoutFromSwiss']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'stages.qualifiers': {

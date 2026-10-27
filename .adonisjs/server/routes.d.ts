@@ -127,6 +127,15 @@ export type ScannedRoutes = {
     'stages.next_round': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.assign_groups': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.generate_fixtures': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.update_swiss_config': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.assign_swiss_teams': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.propose_swiss_round': { paramsTuple: [ParamValue,ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue,'roundNumber': ParamValue} }
+    'stages.confirm_swiss_round': { paramsTuple: [ParamValue,ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue,'roundNumber': ParamValue} }
+    'stages.swiss_qualification': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.propose_swiss_playoff': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.confirm_swiss_playoff': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.preview_swiss_knockout': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.generate_knockout_from_swiss': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.qualifiers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.generate_knockout': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_adjustments.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -192,6 +201,9 @@ export type ScannedRoutes = {
     'invites.accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'players.league_player_requests': { paramsTuple?: []; params?: {} }
     'venues.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'stages.swiss_qualification': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.propose_swiss_playoff': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.preview_swiss_knockout': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.qualifiers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_adjustments.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_zones.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -238,6 +250,9 @@ export type ScannedRoutes = {
     'invites.accept': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'players.league_player_requests': { paramsTuple?: []; params?: {} }
     'venues.index': { paramsTuple: [ParamValue]; params: {'leagueId': ParamValue} }
+    'stages.swiss_qualification': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.propose_swiss_playoff': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.preview_swiss_knockout': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.qualifiers': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_adjustments.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_zones.index': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -302,6 +317,11 @@ export type ScannedRoutes = {
     'stages.next_round': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.assign_groups': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.generate_fixtures': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.assign_swiss_teams': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.propose_swiss_round': { paramsTuple: [ParamValue,ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue,'roundNumber': ParamValue} }
+    'stages.confirm_swiss_round': { paramsTuple: [ParamValue,ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue,'roundNumber': ParamValue} }
+    'stages.confirm_swiss_playoff': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'groupId': ParamValue} }
+    'stages.generate_knockout_from_swiss': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'stages.generate_knockout': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_adjustments.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_overrides.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -349,6 +369,7 @@ export type ScannedRoutes = {
     'seasons.update': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'seasonId': ParamValue} }
     'teams.update': { paramsTuple: [ParamValue,ParamValue]; params: {'leagueId': ParamValue,'id': ParamValue} }
     'venues.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stages.update_swiss_config': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'standing_adjustments.update': { paramsTuple: [ParamValue]; params: {'aid': ParamValue} }
     'standing_zones.update': { paramsTuple: [ParamValue]; params: {'zid': ParamValue} }
     'league_players.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

@@ -1,11 +1,15 @@
 import vine from '@vinejs/vine'
 import { optionalImage, resourceId } from '#validators/common'
 import { LEAGUE_TIEBREAKERS } from '#types/tiebreaker'
-import { groupStageConfigSchema, knockoutStageConfigSchema } from '#validators/stage'
+import {
+  groupStageConfigSchema,
+  knockoutStageConfigSchema,
+  swissStageConfigSchema,
+} from '#validators/stage'
 
 const dateFormats = ['iso8601', 'YYYY-MM-DD']
 
-export const COMPETITION_FORMATS = ['league', 'knockout', 'group'] as const
+export const COMPETITION_FORMATS = ['league', 'knockout', 'group', 'swiss'] as const
 
 export const createLeagueWithSeasonValidator = vine.create({
   name: vine.string().trim().minLength(1).maxLength(255),
@@ -38,6 +42,13 @@ export const createLeagueWithSeasonValidator = vine.create({
     .object({
       name: vine.string().trim().minLength(1).maxLength(255).optional(),
       config: groupStageConfigSchema.optional(),
+    })
+    .optional(),
+  swiss: vine
+    .object({
+      name: vine.string().trim().minLength(1).maxLength(255).optional(),
+      groupNames: vine.array(vine.string().trim().minLength(1).maxLength(120)).minLength(1),
+      config: swissStageConfigSchema,
     })
     .optional(),
   teams: vine
