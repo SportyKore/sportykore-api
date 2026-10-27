@@ -1,4 +1,4 @@
-# Sportykore API
+# Sportykore API v2
 
 Backend for **Sportykore** — a sports league management platform. This repository is an [AdonisJS 7](https://adonisjs.com) application that serves:
 
