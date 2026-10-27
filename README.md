@@ -178,7 +178,8 @@ Cloud Run builds and runs the **`Dockerfile` `production` target** — not `dock
 | `NODE_ENV` | `production` |
 | `HOST` | `0.0.0.0` |
 | `PORT` | `8080` (Cloud Run sets this automatically) |
-| `APP_URL` | Your Cloud Run URL |
+| `APP_URL` | Your Cloud Run / API URL |
+| `PUBLIC_WEB_URL` | `https://join.sportykore.com` for join/claim links |
 | `DRIVE_DISK` | `gcs` |
 | `GCS_BUCKET` | Your bucket name |
 | `GCS_KEY` | **Omit** — Cloud Run uses ADC |
@@ -203,7 +204,8 @@ Validated in `start/env.ts`. Copy [`.env.example`](.env.example) for local SQLit
 | `NODE_ENV` | `development` \| `production` \| `test` |
 | `HOST`, `PORT` | HTTP bind (default `localhost:3333`) |
 | `APP_KEY` | App secret — run `node ace generate:key` |
-| `APP_URL` | Public app URL |
+| `APP_URL` | API origin (OAuth callbacks, internal absolute URLs) |
+| `PUBLIC_WEB_URL` | Optional origin for join/claim/registration links (`https://join.sportykore.com`). Falls back to `APP_URL` |
 | `LOG_LEVEL` | Pino log level |
 | `SESSION_DRIVER` | `cookie` \| `memory` \| `database` |
 | `DB_CONNECTION` | `sqlite` (default) or `pg` |

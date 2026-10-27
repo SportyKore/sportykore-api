@@ -1,3 +1,4 @@
+import env from '#start/env'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import UserTransformer from '#transformers/user_transformer'
@@ -36,6 +37,11 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
   }
 
   async handle(ctx: HttpContext, next: NextFn) {
+    ctx.view.share({
+      socialTitle: 'SportyKore',
+      socialDescription: 'Follow your teams, matches, and competitions on SportyKore.',
+      socialImage: new URL('/images/sportykore-logo.png', env.get('APP_URL')).href,
+    })
     await this.init(ctx)
 
     const output = await next()
