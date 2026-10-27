@@ -113,11 +113,11 @@ Bearer token on all routes. User must own the league (`leagueOwner` middleware).
    ```
 4. Response (not wrapped in `data`):
    ```json
-   { "inviteLink": "/join/550e8400-e29b-41d4-a716-446655440000" }
+   { "inviteLink": "https://join.sportykore.com/join/550e8400-e29b-41d4-a716-446655440000" }
    ```
-5. Build shareable URL: `{MOBILE_APP_URL}{inviteLink}` (e.g. `sportykore://join/...` or `https://app.example.com/join/...`)
-6. Native share sheet (WhatsApp, SMS, etc.)
-7. Refetch roster after invitees accept: `GET /api/v1/leagues/:leagueId/seasons/:seasonId/roster`
+   `inviteLink` is an absolute public page URL (`PUBLIC_WEB_URL`, else `APP_URL`). Share it as-is. For the native app, extract the token from the path (`/join/{token}`) and open `sportykore://join-league?token=...`.
+5. Native share sheet (WhatsApp, SMS, etc.)
+6. Refetch roster after invitees accept: `GET /api/v1/leagues/:leagueId/seasons/:seasonId/roster`
 
 ### Flow B — general link
 
@@ -151,7 +151,7 @@ On open:
 - Persist it until accept completes (e.g. AsyncStorage key `pendingInviteToken` **and** in-memory nav state)
 - Do **not** discard the token after signup — signup does not consume the invite
 
-Prefix for sharing (admin side): use `MOBILE_APP_URL` env on the server when building full URLs for email; the generate API returns only the path `/join/{token}`.
+Prefix for sharing: the generate API already returns a full `https://join.sportykore.com/join/{token}` URL when `PUBLIC_WEB_URL` is set. Do not prepend `APP_URL` or `MOBILE_APP_URL`.
 
 ### 2. Auth gate
 
@@ -288,7 +288,7 @@ Do not wire the invite deep link to those endpoints.
 - [ ] Season picker + teams load before generate
 - [ ] Flow A: user search → pick user → generate with `invitedUserId`
 - [ ] Flow B: generate without `invitedUserId`
-- [ ] Build full deep link from `inviteLink` + app base URL
+- [ ] Share `inviteLink` as-is (already a public `https://join.sportykore.com/join/{token}` URL)
 - [ ] Native share
 - [ ] Roster list + refetch after mutations
 

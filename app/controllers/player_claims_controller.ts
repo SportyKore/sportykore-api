@@ -1,5 +1,6 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import { publicWebUrl } from '#helpers/public_web_url'
 import PlayerClaimService from '#services/player_claim_service'
 import { createPlayerClaimValidator } from '#validators/player_claim'
 
@@ -20,7 +21,13 @@ export default class PlayerClaimsController {
     return serialize(await this.claims.redeem(String(params.token), auth.getUserOrFail().id))
   }
 
-  async show({ params, response, inertia }: HttpContext) {
+  async show({ params, response, inertia, view }: HttpContext) {
+    view.share({
+      socialTitle: 'Claim your player profile | SportyKore',
+      socialDescription:
+        'Connect your SportyKore player profile to your account and keep your match history and stats together.',
+      socialImage: publicWebUrl('/images/sportykore-logo.png'),
+    })
     const token = String(params.token)
     response.header('Cache-Control', 'no-store')
     response.header('Referrer-Policy', 'no-referrer')

@@ -3,7 +3,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { Exception } from '@adonisjs/core/exceptions'
 import db from '@adonisjs/lucid/services/db'
 import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
-import env from '#start/env'
+import { publicWebUrl } from '#helpers/public_web_url'
 
 type ClaimInput = { playerId: number; leagueId: number; seasonId: number }
 const digest = (token: string) => createHash('sha256').update(token).digest('hex')
@@ -41,7 +41,7 @@ export default class PlayerClaimService {
         created_at: now,
       })
     })
-    return { claimLink: new URL(`/claim/${token}`, env.get('APP_URL')).href }
+    return { claimLink: publicWebUrl(`/claim/${token}`) }
   }
 
   async isAvailable(token: string): Promise<boolean> {

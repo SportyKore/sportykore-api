@@ -12,7 +12,7 @@ Admin-created players are active immediately. Public submissions are accepted au
 
 ## Browser registration
 
-Shared links point to the backend's public Inertia page at `/join/:token`; they do not require an installed app or account. The server determines the league, season, and team from the invite, not from submitted form fields. League-only links place players in the unassigned pool. Account-specific legacy invites still require the invited account and are not anonymous-registration links.
+Shared links point to the public Inertia page at `{PUBLIC_WEB_URL}/join/:token` (falls back to `APP_URL`); they do not require an installed app or account. The server determines the league, season, and team from the invite, not from submitted form fields. League-only links place players in the unassigned pool. Account-specific legacy invites still require the invited account and are not anonymous-registration links.
 
 The form uses CSRF protection, per-IP throttling, image validation, and a submission ID for retry safety. Duplicate-name confirmation does not expose another player's identity or contact information. The confirmation page shows approval/assignment status. Anonymous editing is not supported.
 
@@ -39,7 +39,7 @@ All `/api/v1/roster` routes require a bearer token and enforce league/team scope
 
 1. Deploy the backend with the roster, public-registration, and claim migrations, including the Inertia assets.
 2. Run pending migrations through the normal deployment process. They make `players.user_id` and `country_id` nullable, add registration approval settings, widen roster statuses, and add retry/claim records. `league_players.team_id` is already nullable.
-3. Ensure backend `APP_URL` is the externally reachable HTTPS origin used for claim links, and existing mail delivery is configured for OTP verification.
+3. Ensure `PUBLIC_WEB_URL` (or `APP_URL` if unset) is the externally reachable HTTPS origin used for join/claim links, and existing mail delivery is configured for OTP verification.
 4. Release the mobile app. Public registration links use `EXPO_PUBLIC_API_URL` (or the existing backend default), which must be reachable by recipients.
 
 No production migrations or deployment are performed by these source changes. Rollback of the roster foundation deliberately retains nullable fields and expanded statuses to avoid invalidating players already created without accounts.

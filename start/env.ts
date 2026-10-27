@@ -22,6 +22,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   // App
   APP_KEY: Env.schema.secret(),
   APP_URL: Env.schema.string({ format: 'url', tld: false }),
+  /**
+   * Public browser origin for join/claim/registration links
+   * (e.g. https://join.sportykore.com). Falls back to APP_URL.
+   */
+  PUBLIC_WEB_URL: Env.schema.string.optional({ format: 'url', tld: false }),
   SECRET_SANTA_PASSWORD: Env.schema.string.optional(),
 
   // Session

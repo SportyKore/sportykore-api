@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import type { HttpContext } from '@adonisjs/core/http'
+import { publicWebUrl } from '#helpers/public_web_url'
 import Country from '#models/country'
 import LeaguePlayer from '#models/league_player'
 import db from '@adonisjs/lucid/services/db'
@@ -20,10 +21,19 @@ export default class PublicPlayersController {
       requestId: randomUUID(),
     }
   }
-  async show({ params, inertia, response, session }: HttpContext) {
+  async show({ params, inertia, response, session, view }: HttpContext) {
     response.header('Cache-Control', 'no-store').header('Referrer-Policy', 'same-origin')
     try {
       const props = await this.props(params.token)
+      view.share({
+        socialTitle: props.teamName
+          ? `Join ${props.teamName} in ${props.leagueName} | SportyKore`
+          : `Join ${props.leagueName} | SportyKore`,
+        socialDescription: props.teamName
+          ? 'Register your player profile and join the team. No sign-in required.'
+          : 'Register your player profile and join the league. No sign-in required.',
+        socialImage: publicWebUrl('/images/sportykore-logo.png'),
+      })
       return inertia.render('players/register', {
         ...props,
         duplicateName: Boolean(session.flashMessages.get('registrationDuplicate')),

@@ -3,6 +3,7 @@ import { inject } from '@adonisjs/core'
 import { Exception } from '@adonisjs/core/exceptions'
 import { DateTime } from 'luxon'
 import { playerAvatarKey } from '#helpers/storage_paths'
+import { publicWebUrl } from '#helpers/public_web_url'
 import Invite from '#models/invite'
 import Player from '#models/player'
 import LeaguePlayer from '#models/league_player'
@@ -28,7 +29,7 @@ export default class InviteService {
       status: 'pending',
       expiresAt: DateTime.utc().plus({ days: 7 }),
     })
-    return `/join/${token}`
+    return publicWebUrl(`/join/${token}`)
   }
 
   async accept(token: string, userId: number) {

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
 import { test } from '@japa/runner'
 import env from '#start/env'
+import { publicWebUrl } from '#helpers/public_web_url'
 import User from '#models/user'
 import Country from '#models/country'
 import League from '#models/league'
@@ -115,6 +116,10 @@ test.group('Roster and registration HTTP routes', (group) => {
       { headers: f.adminHeaders }
     )
     assert.equal(invite.status, 200)
+    assert.match(
+      ((await invite.json()) as { inviteLink: string }).inviteLink,
+      /^https?:\/\/.+\/join\/[0-9a-f-]{36}$/i
+    )
     const denied = await fetch(
       url(`/api/v1/invites/generate?leagueId=${f.league.id}&seasonId=${f.season.id}`),
       { headers: f.adminHeaders }
@@ -130,6 +135,11 @@ test.group('Roster and registration HTTP routes', (group) => {
     const page = await fetch(url(path), { headers: { Accept: 'text/html' } })
     assert.equal(page.status, 200)
     const html = await page.text()
+    assert.include(html, '<meta property="og:title" content="Join HTTP League | SportyKore"')
+    assert.include(html, '<meta property="og:site_name" content="SportyKore"')
+    assert.include(html, 'No sign-in required.')
+    assert.include(html, publicWebUrl('/images/sportykore-logo.png'))
+    assert.notInclude(html, 'AdonisJS')
     const encoded = html.match(/data-page="([^"]+)"/)?.[1]
     assert.isString(encoded)
     const data = JSON.parse(
