@@ -317,6 +317,36 @@ router
         router.post('leagues/stages/:id/next-round', [controllers.Stages, 'nextRound'])
         router.post('leagues/stages/:id/groups/assign', [controllers.Stages, 'assignGroups'])
         router.post('leagues/stages/:id/fixtures', [controllers.Stages, 'generateFixtures'])
+        router.put('leagues/stages/:id/swiss/config', [controllers.Stages, 'updateSwissConfig'])
+        router.post('leagues/stages/:id/swiss/assign', [controllers.Stages, 'assignSwissTeams'])
+        router.post('leagues/stages/:id/swiss/groups/:groupId/rounds/:roundNumber/propose', [
+          controllers.Stages,
+          'proposeSwissRound',
+        ])
+        router.post('leagues/stages/:id/swiss/groups/:groupId/rounds/:roundNumber/confirm', [
+          controllers.Stages,
+          'confirmSwissRound',
+        ])
+        router.get('leagues/stages/:id/swiss/groups/:groupId/qualification', [
+          controllers.Stages,
+          'swissQualification',
+        ])
+        router.get('leagues/stages/:id/swiss/groups/:groupId/playoff/propose', [
+          controllers.Stages,
+          'proposeSwissPlayoff',
+        ])
+        router.post('leagues/stages/:id/swiss/groups/:groupId/playoff/confirm', [
+          controllers.Stages,
+          'confirmSwissPlayoff',
+        ])
+        router.get('leagues/stages/:id/swiss/generate-knockout/preview', [
+          controllers.Stages,
+          'previewSwissKnockout',
+        ])
+        router.post('leagues/stages/:id/swiss/generate-knockout', [
+          controllers.Stages,
+          'generateKnockoutFromSwiss',
+        ])
         router.get('leagues/stages/:id/qualifiers', [controllers.Stages, 'qualifiers'])
         router.post('leagues/stages/:id/generate-knockout', [
           controllers.Stages,

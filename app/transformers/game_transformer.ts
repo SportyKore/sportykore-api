@@ -34,6 +34,8 @@ export default class GameTransformer extends BaseTransformer<Game> {
         'playedAt',
         'venueName',
         'stageId',
+        'stageGroupId',
+        'roundNumber',
         'tieId',
         'leg',
         'round',

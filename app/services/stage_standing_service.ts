@@ -43,6 +43,15 @@ export type StageStandingsResult = {
 }
 
 export default class StageStandingService {
+  /** Reads `config.format.rounds` directly (not via SwissPairingService) to avoid a circular import. */
+  private swissRoundsLimit(stage: Stage): number | null {
+    const raw = stage.config
+    const config = typeof raw === 'string' ? JSON.parse(raw) : (raw as Record<string, unknown>)
+    const format = (config?.format ?? {}) as Record<string, unknown>
+    const rounds = Number(format.rounds)
+    return Number.isFinite(rounds) ? rounds : null
+  }
+
   async forStage(stageId: number): Promise<StageStandingsResult> {
     const stage = await Stage.query().where('id', stageId).preload('season').firstOrFail()
 
@@ -58,7 +67,7 @@ export default class StageStandingService {
       StandingZone.query().where('stage_id', stageId),
     ])
 
-    if (stage.stageType === 'group') {
+    if (stage.stageType === 'group' || stage.stageType === 'swiss') {
       const groups = await StageGroup.query()
         .where('stage_id', stageId)
         .orderBy('sequence', 'asc')
@@ -146,7 +155,7 @@ export default class StageStandingService {
     adjustments: StandingAdjustment[]
   ): Promise<Array<TableRow & { team: StandingTeamRef }>> {
     const teamMeta = await this.resolveTeamMeta(stage, stageGroupId)
-    const games = await this.loadGames(stage.id, stageGroupId)
+    const games = await this.loadGames(stage, stageGroupId)
     const scopedAdjustments = adjustments
       .filter((a) => a.stageGroupId === stageGroupId || a.stageGroupId === null)
       .filter((a) => teamMeta.some((t) => t.id === a.teamId))
@@ -169,27 +178,31 @@ export default class StageStandingService {
     stage: Stage,
     stageGroupId: number | null
   ): Promise<Array<TeamMeta & { logoUrl: string | null }>> {
-    if (stage.stageType === 'group') {
+    if (stage.stageType === 'group' || stage.stageType === 'swiss') {
       const stageTeams = await StageTeam.query()
         .where('stage_id', stage.id)
         .if(stageGroupId !== null, (q) => q.where('stage_group_id', stageGroupId!))
         .preload('team')
 
-      return stageTeams.filter((st) => st.team).map((st) => ({
-        id: st.teamId,
-        name: st.team.name ?? `Team ${st.teamId}`,
-        logoUrl: st.team.logoUrl ?? null,
-      }))
+      return stageTeams
+        .filter((st) => st.team)
+        .map((st) => ({
+          id: st.teamId,
+          name: st.team.name ?? `Team ${st.teamId}`,
+          logoUrl: st.team.logoUrl ?? null,
+        }))
     }
 
     // round_robin: prefer stage_teams; fall back to all league teams
     const stageTeams = await StageTeam.query().where('stage_id', stage.id).preload('team')
     if (stageTeams.length > 0) {
-      return stageTeams.filter((st) => st.team).map((st) => ({
-        id: st.teamId,
-        name: st.team.name ?? `Team ${st.teamId}`,
-        logoUrl: st.team.logoUrl ?? null,
-      }))
+      return stageTeams
+        .filter((st) => st.team)
+        .map((st) => ({
+          id: st.teamId,
+          name: st.team.name ?? `Team ${st.teamId}`,
+          logoUrl: st.team.logoUrl ?? null,
+        }))
     }
 
     const season = stage.season ?? (await Season.findOrFail(stage.seasonId))
@@ -201,9 +214,9 @@ export default class StageStandingService {
     }))
   }
 
-  private async loadGames(stageId: number, stageGroupId: number | null) {
+  private async loadGames(stage: Stage, stageGroupId: number | null) {
     const query = Game.query()
-      .where('stage_id', stageId)
+      .where('stage_id', stage.id)
       .whereIn('status', [...STANDING_GAME_STATUSES])
       .orderBy('played_at', 'asc')
 
@@ -211,6 +224,15 @@ export default class StageStandingService {
       query.whereNull('stage_group_id')
     } else {
       query.where('stage_group_id', stageGroupId)
+    }
+
+    // Swiss playoff games (generated for round > the swiss stage's own round count)
+    // decide who advances — they must not feed back into the swiss group table.
+    if (stage.stageType === 'swiss') {
+      const rounds = this.swissRoundsLimit(stage)
+      if (rounds !== null) {
+        query.where((q) => q.whereNull('round_number').orWhere('round_number', '<=', rounds))
+      }
     }
 
     const games = await query

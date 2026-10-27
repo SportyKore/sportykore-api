@@ -39,7 +39,11 @@ export default class BracketService {
     return { stage, ties }
   }
 
-  async generateKnockoutPhase(stageId: number, seededTeamIds: number[]) {
+  async generateKnockoutPhase(
+    stageId: number,
+    seededTeamIds: number[],
+    client?: TransactionClientContract
+  ) {
     if (seededTeamIds.length < 2) {
       throw new Exception('At least 2 teams are required to seed a knockout', { status: 422 })
     }
@@ -51,14 +55,18 @@ export default class BracketService {
 
     // Validate stage + teams before opening a transaction — SQLite pool size is 1,
     // so non-trx queries inside an open transaction will deadlock.
-    const stagePeek = await Stage.findOrFail(stageId)
+    const stagePeek = await Stage.query(client ? { client } : undefined)
+      .where('id', stageId)
+      .firstOrFail()
     if (stagePeek.stageType !== 'knockout') {
       throw new Exception('Stage is not a knockout stage', { status: 422 })
     }
-    const seasonPeek = await Season.findOrFail(stagePeek.seasonId)
-    await this.stageService.assertTeamsInLeague(seasonPeek.leagueId, seededTeamIds)
+    const seasonPeek = await Season.query(client ? { client } : undefined)
+      .where('id', stagePeek.seasonId)
+      .firstOrFail()
+    await this.stageService.assertTeamsInLeague(seasonPeek.leagueId, seededTeamIds, client)
 
-    return db.transaction(async (trx) => {
+    const seed = async (trx: TransactionClientContract) => {
       const stage = await Stage.query({ client: trx }).where('id', stageId).firstOrFail()
       if (stage.stageType !== 'knockout') {
         throw new Exception('Stage is not a knockout stage', { status: 422 })
@@ -168,7 +176,8 @@ export default class BracketService {
       await stage.save()
 
       return stage
-    })
+    }
+    return client ? seed(client) : db.transaction(seed)
   }
 
   async generateNextRound(stageId: number, completedRound: BracketRound) {

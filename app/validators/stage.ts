@@ -1,6 +1,11 @@
 import vine from '@vinejs/vine'
 import { resourceId } from '#validators/common'
-import { BRACKET_ROUNDS, TIE_FORMATS } from '#types/stage'
+import {
+  BRACKET_ROUNDS,
+  SWISS_BYE_HANDLINGS,
+  SWISS_PLAYOFF_PAIRINGS,
+  TIE_FORMATS,
+} from '#types/stage'
 import { ZONE_TYPES } from '#types/standing'
 
 const tieFormatFields = {
@@ -78,6 +83,83 @@ export const assignGroupTeamsValidator = vine.create({
 
 export const generateGroupFixturesValidator = vine.create({})
 
+/** Swiss stage `config` object. */
+const swissQualificationRuleSchema = vine.object({
+  directCount: vine.number().withoutDecimals().min(0),
+  playoffRankFrom: vine.number().withoutDecimals().min(0),
+  playoffRankTo: vine.number().withoutDecimals().min(0),
+  playoffPairing: vine.enum(SWISS_PLAYOFF_PAIRINGS).optional(),
+})
+
+export const swissStageConfigSchema = vine.object({
+  format: vine.object({
+    rounds: vine.number().withoutDecimals().min(1).max(20),
+    byeHandling: vine.enum(SWISS_BYE_HANDLINGS),
+    seed: vine.number().withoutDecimals().optional(),
+  }),
+  qualification: swissQualificationRuleSchema,
+  /** Per-group override, keyed by stageGroupId (as a string key). */
+  qualificationByGroup: vine.record(swissQualificationRuleSchema).optional(),
+  constraints: vine
+    .object({
+      noPair: vine
+        .array(
+          vine.object({
+            teamIds: vine.array(resourceId('teams')).minLength(2).maxLength(2),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+})
+
+export const createSwissStageValidator = vine.create({
+  seasonId: resourceId('seasons'),
+  name: vine.string().trim().minLength(1).maxLength(255),
+  sequence: vine.number().withoutDecimals().min(1).optional(),
+  stageType: vine.literal('swiss').optional(),
+  groupNames: vine.array(vine.string().trim().minLength(1).maxLength(120)).minLength(1),
+  config: swissStageConfigSchema,
+})
+
+export const updateSwissStageConfigValidator = vine.create({
+  config: swissStageConfigSchema,
+})
+
+export const assignSwissTeamsValidator = vine.create({
+  mode: vine.enum(['manual', 'auto']),
+  assignments: vine
+    .array(
+      vine.object({
+        teamId: resourceId('teams'),
+        stageGroupId: resourceId('stage_groups'),
+      })
+    )
+    .optional(),
+  teamIds: vine.array(resourceId('teams')).minLength(2).optional(),
+  shuffle: vine.boolean().optional(),
+})
+
+const proposedFixtureSchema = vine.object({
+  homeTeamId: resourceId('teams'),
+  awayTeamId: resourceId('teams'),
+})
+
+export const proposeSwissRoundValidator = vine.create({
+  mode: vine.enum(['auto', 'manual']),
+  fixtures: vine.array(proposedFixtureSchema).optional(),
+  allowIncompleteRounds: vine.boolean().optional(),
+})
+
+export const confirmSwissRoundValidator = vine.create({
+  fixtures: vine.array(proposedFixtureSchema).minLength(1),
+  playedAt: vine.string().optional(),
+  venueName: vine.string().trim().maxLength(255).nullable().optional(),
+  venueId: resourceId('venues').nullable().optional(),
+  byeTeamId: vine.number().withoutDecimals().min(1).nullable().optional(),
+  forceOverride: vine.boolean().optional(),
+})
+
 export const generateKnockoutFromGroupValidator = vine.create({
   targetRound: vine.enum(BRACKET_ROUNDS).optional(),
   thirdsMode: vine.enum(['auto', 'manual']).optional(),
@@ -141,4 +223,17 @@ export const nextRoundValidator = vine.create({
 export const completePenaltyShootoutValidator = vine.create({
   homePenaltyScore: vine.number().withoutDecimals().min(0).max(50),
   awayPenaltyScore: vine.number().withoutDecimals().min(0).max(50),
+})
+
+export const confirmSwissPlayoffValidator = vine.create({
+  fixtures: vine.array(proposedFixtureSchema).minLength(1),
+  playedAt: vine.string().optional(),
+  venueName: vine.string().trim().maxLength(255).nullable().optional(),
+  venueId: resourceId('venues').nullable().optional(),
+})
+
+export const generateKnockoutFromSwissValidator = vine.create({
+  name: vine.string().trim().minLength(1).maxLength(255).optional(),
+  groupOrder: vine.array(resourceId('stage_groups')).optional(),
+  knockout: knockoutStageConfigSchema.optional(),
 })

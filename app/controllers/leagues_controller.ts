@@ -78,6 +78,7 @@ export default class LeaguesController {
       ...body,
       knockout: parseJsonField(request.input('knockout')),
       group: parseJsonField(request.input('group')),
+      swiss: parseJsonField(request.input('swiss')),
       teams: normalizeTeamFields(body, request),
     })
     const data = await request.validateUsing(createLeagueWithSeasonValidator)
@@ -113,6 +114,13 @@ export default class LeaguesController {
         ? {
             name: data.group.name,
             config: data.group.config,
+          }
+        : undefined,
+      swiss: data.swiss
+        ? {
+            name: data.swiss.name,
+            groupNames: data.swiss.groupNames,
+            config: data.swiss.config,
           }
         : undefined,
     })
@@ -196,13 +204,9 @@ export default class LeaguesController {
 
     const isLoggedIn = await auth.use('api').check()
     const userId = isLoggedIn ? auth.use('api').getUserOrFail().id : undefined
-    const { seasons, season, statTypes } = await this.leagueService.getLeague(
-      leagueId,
-      seasonId,
-      {
-        includeInactiveForUserId: includeInactive ? userId : undefined,
-      }
-    )
+    const { seasons, season, statTypes } = await this.leagueService.getLeague(leagueId, seasonId, {
+      includeInactiveForUserId: includeInactive ? userId : undefined,
+    })
 
     return serialize({
       seasons: SeasonTransformer.transform(seasons),

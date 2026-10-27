@@ -21,11 +21,12 @@ import {
 } from '#types/league_status'
 
 import { DEFAULT_LEAGUE_TIEBREAKER, type LeagueTiebreaker } from '#types/tiebreaker'
-import type { GroupStageConfig, KnockoutStageConfig } from '#types/stage'
+import type { GroupStageConfig, KnockoutStageConfig, SwissStageConfig } from '#types/stage'
 import StageService from '#services/stage_service'
 import GroupStageService from '#services/group_stage_service'
+import SwissPairingService from '#services/swiss_pairing_service'
 
-export type CompetitionFormat = 'league' | 'knockout' | 'group'
+export type CompetitionFormat = 'league' | 'knockout' | 'group' | 'swiss'
 
 export type CreateLeagueInput = {
   name: string
@@ -47,6 +48,11 @@ export type CreateLeagueInput = {
   group?: {
     name?: string
     config?: Partial<GroupStageConfig> | GroupStageConfig
+  }
+  swiss?: {
+    name?: string
+    groupNames: string[]
+    config: SwissStageConfig
   }
 }
 
@@ -83,6 +89,7 @@ export default class LeagueService {
     private standingService: StandingService,
     private stageService: StageService = new StageService(),
     private groupStageService: GroupStageService = new GroupStageService(),
+    private swissPairingService: SwissPairingService = new SwissPairingService(),
     private auditService: AuditService = new AuditService()
   ) {}
 
@@ -101,6 +108,10 @@ export default class LeagueService {
 
     if (format === 'knockout' && input.knockout?.config) {
       this.stageService.assertKnockoutTieConfig(input.knockout.config)
+    }
+
+    if (format === 'swiss' && !input.swiss?.groupNames?.length) {
+      throw new Exception('swiss.groupNames is required when format is swiss', { status: 422 })
     }
 
     const created = await db.transaction(async (trx) => {
@@ -160,6 +171,18 @@ export default class LeagueService {
           trx
         )
         stage = groupStage
+      } else if (format === 'swiss') {
+        const { stage: swissStage } = await this.swissPairingService.createSwissStage(
+          league.id,
+          season.id,
+          {
+            name: input.swiss?.name ?? 'Opening Stage',
+            groupNames: input.swiss!.groupNames,
+            config: input.swiss!.config,
+          },
+          trx
+        )
+        stage = swissStage
       } else {
         stage = await this.stageService.ensureRoundRobinStage(season.id, trx)
         if (teams.length > 0) {
@@ -460,7 +483,9 @@ export default class LeagueService {
     const groupStages = await Stage.query()
       .where('season_id', selectedSeasonId)
       .where('stage_type', 'group')
-    await Promise.all(groupStages.map((stage) => this.groupStageService.ensureGroupsForStage(stage)))
+    await Promise.all(
+      groupStages.map((stage) => this.groupStageService.ensureGroupsForStage(stage))
+    )
 
     const [season, statTypes] = await Promise.all([
       Season.query()
